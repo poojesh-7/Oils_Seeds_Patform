@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Processor Dashboard - OilSeed Pro</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <Style>
+    .noti{
+      position: absolute;
+      top: 100px;
+      right: 50px;
+    }
+  </Style>
+</head>
+<body>
+     <div class="noti">
+   </div>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="../index.html" class="logo">
+        <div class="logo-icon">🌱</div>
+        <span>OilSeed Pro</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="live-market.html">Live Market</a></li>
+        <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+        <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Dashboard -->
+  <div class="dashboard">
+    <div class="dashboard-container">
+      <div class="dashboard-header">
+        <h1 class="dashboard-title">Processor Dashboard</h1>
+        <p class="dashboard-subtitle">Manage purchases, processing, and by-product sales</p>
+      </div>
+
+      <div class="dashboard-grid">
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar">
+          <ul class="sidebar-menu">
+            <li><a href="#" class="active" onclick="showTab('overview')"><i class="fas fa-home"></i> Overview</a></li>
+            <li><a href="#" onclick="showTab('buy')"><i class="fas fa-shopping-cart"></i> Buy Raw Oilseeds</a></li>
+            <li><a href="#" onclick="showTab('inventory')"><i class="fas fa-warehouse"></i> My Inventory</a></li>
+            <li><a href="#" onclick="showTab('upload')"><i class="fas fa-upload"></i> Upload By-Products</a></li>
+            <!-- <li><a href="#" onclick="showTab('transactions')"><i class="fas fa-exchange-alt"></i> Transactions</a></li> -->
+            <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+          </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-content">
+          <!-- Overview Tab -->
+          <div id="overview" class="tab-content active">
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-card-icon"><i class="fas fa-oil-can"></i></div>
+                <div class="stat-card-value" id="totalByproducts">0</div>
+                <div class="stat-card-label">By-Products Listed</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-icon"><i class="fas fa-shopping-basket"></i></div>
+                <div class="stat-card-value" id="totalPurchases">0</div>
+                <div class="stat-card-label">Raw Purchases</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-icon"><i class="fas fa-rupee-sign"></i></div>
+                <div class="stat-card-value" id="purchaseValue">₹0</div>
+                <div class="stat-card-label">Purchase Value</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="stat-card-value" id="salesValue">₹0</div>
+                <div class="stat-card-label">Sales Value</div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Processing Overview</h3>
+              </div>
+              <div class="card-body">
+                <canvas id="processingChart" height="100"></canvas>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem;">
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">Available Raw Oilseeds</h3>
+                  <a href="#" onclick="showTab('buy')" class="auth-link">View All</a>
+                </div>
+                <div class="card-body">
+                  <div class="table-container">
+                    <table class="data-table" id="availableOilseedsTable">
+                      <thead>
+                        <tr>
+                          <th>Product</th>
+                          <th>Quantity</th>
+                          <th>Price/q</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td colspan="4" class="loading">
+                            <div class="spinner"></div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">My By-Products</h3>
+                  <a href="#" onclick="showTab('inventory')" class="auth-link">View All</a>
+                </div>
+                <div class="card-body">
+                  <div class="table-container">
+                    <table class="data-table" id="myByproductsTable">
+                      <thead>
+                        <tr>
+                          <th>Product</th>
+                          <th>Quantity</th>
+                          <th>Price</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td colspan="4" class="loading">
+                            <div class="spinner"></div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Buy Raw Oilseeds Tab -->
+          <div id="buy" class="tab-content">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Available Raw Oilseeds</h3>
+              </div>
+              <div class="card-body">
+                <div class="product-grid" id="oilseedProducts">
+                  <div class="loading">
+                    <div class="spinner"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Inventory Tab -->
+          <div id="inventory" class="tab-content">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">My By-Products Inventory</h3>
+                <a href="#" onclick="showTab('upload')" class="btn btn-primary btn-sm">
+                  <i class="fas fa-plus"></i> Add New
+                </a>
+              </div>
+              <div class="card-body">
+                <div class="table-container">
+                  <table class="data-table" id="inventoryTable">
+                    <thead>
+                      <tr>
+                        <th>Product</th>
+                        <th>Source</th>
+                        <th>Quantity</th>
+                        <th>Price/kg</th>
+                        <th>Batch #</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td colspan="7" class="loading">
+                          <div class="spinner"></div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Upload By-Products Tab -->
+          <div id="upload" class="tab-content">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Upload Processed By-Products</h3>
+              </div>
+              <div class="card-body">
+                <form id="uploadByproductForm">
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-group">
+                      <label class="form-label" for="productType">Product Type *</label>
+                      <select class="form-select" id="productType" required>
+                        <option value="">Select product type</option>
+                        <option value="soymeal">Soymeal</option>
+                        <option value="oil_cake">Oil Cake</option>
+                        <option value="husk">Husk</option>
+                        <option value="deoiled_cake">De-oiled Cake</option>
+                        <option value="lecithin">Lecithin</option>
+                        <option value="fatty_acids">Fatty Acids</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label" for="sourceOilseed">Source Oilseed *</label>
+                      <select class="form-select" id="sourceOilseed" required>
+                        <option value="">Select source oilseed</option>
+                        <option value="soybean">Soybean</option>
+                        <option value="groundnut">Groundnut</option>
+                        <option value="mustard">Mustard</option>
+                        <option value="sunflower">Sunflower</option>
+                        <option value="sesame">Sesame</option>
+                        <option value="cottonseed">Cottonseed</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label" for="quantity">Quantity (kg) *</label>
+                      <input type="number" class="form-input" id="quantity" placeholder="Enter quantity" required min="1" step="0.01">
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label" for="price">Price per kg (₹) *</label>
+                      <input type="number" class="form-input" id="price" placeholder="Enter price" required min="1" step="0.01">
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label" for="batchNumber">Batch Number *</label>
+                      <input type="text" class="form-input" id="batchNumber" placeholder="e.g., BTCH-2024-001" required>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label" for="expiryDate">Expiry Date</label>
+                      <input type="date" class="form-input" id="expiryDate">
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label" for="storageCondition">Storage Condition</label>
+                      <select class="form-select" id="storageCondition">
+                        <option value="">Select condition</option>
+                        <option value="cold_storage">Cold Storage</option>
+                        <option value="warehouse">Warehouse</option>
+                        <option value="silo">Silo</option>
+                        <option value="open_yard">Open Yard</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="nutritionContent">Nutrition Content / Specifications</label>
+                    <textarea class="form-textarea" id="nutritionContent" placeholder="e.g., Protein: 48%, Moisture: 12%, Fiber: 7%"></textarea>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="description">Description</label>
+                    <textarea class="form-textarea" id="description" placeholder="Additional details about the product..."></textarea>
+                  </div>
+
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-upload"></i>
+                    List By-Product
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Transactions Tab -->
+          <div id="transactions" class="tab-content">
+            <div class="tabs">
+              <div class="tab active" onclick="showSubTab('purchases')">Purchases</div>
+              <div class="tab" onclick="showSubTab('sales')">Sales</div>
+            </div>
+
+            <div id="purchases" class="sub-tab-content active">
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">Raw Oilseed Purchase History</h3>
+                </div>
+                <div class="card-body">
+                  <div class="table-container">
+                    <table class="data-table" id="purchaseHistoryTable">
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th>Product</th>
+                          <th>Quantity</th>
+                          <th>Price/q</th>
+                          <th>Total</th>
+                          <th>Farmer</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td colspan="7" class="loading">
+                            <div class="spinner"></div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="sales" class="sub-tab-content" style="display: none;">
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">By-Product Sales History</h3>
+                </div>
+                <div class="card-body">
+                  <div class="table-container">
+                    <table class="data-table" id="salesHistoryTable">
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th>Product</th>
+                          <th>Quantity</th>
+                          <th>Price/kg</th>
+                          <th>Total</th>
+                          <th>Buyer</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td colspan="7" class="loading">
+                            <div class="spinner"></div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- Purchase Confirmation Modal -->
+  <div id="purchaseModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
+    <div style="background: white; padding: 2rem; border-radius: 16px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto;">
+      <h3 style="margin-bottom: 1.5rem; color: var(--primary);"><i class="fas fa-shopping-cart"></i> Confirm Purchase</h3>
+      <div id="purchaseModalContent"></div>
+      <div style="background: var(--light); padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+          <input type="radio" name="paymentMethod" value="pay_on_delivery" checked>
+          <span><i class="fas fa-truck"></i> Pay on Delivery</span>
+        </label>
+        <p style="font-size: 0.875rem; color: var(--gray); margin-left: 1.5rem; margin-top: 0.25rem;">Pay cash when product is delivered</p>
+      </div>
+      <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+        <button class="btn btn-primary" onclick="confirmPurchase()" style="flex: 1;">
+          <i class="fas fa-check"></i> Confirm Purchase
+        </button>
+        <button class="btn btn-outline" onclick="closePurchaseModal()" style="flex: 1;">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feedback Modal -->
+  <div id="feedbackModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
+    <div style="background: white; padding: 2rem; border-radius: 16px; max-width: 450px; width: 90%;">
+      <h3 style="margin-bottom: 1rem; color: var(--primary);"><i class="fas fa-star"></i> Rate Your Experience</h3>
+      <p id="feedbackFor" style="color: var(--gray); margin-bottom: 1.5rem;"></p>
+      
+      <div style="text-align: center; margin-bottom: 1.5rem;">
+        <div id="starRating" style="font-size: 2rem; cursor: pointer;">
+          <span onclick="setRating(1)" class="star">☆</span>
+          <span onclick="setRating(2)" class="star">☆</span>
+          <span onclick="setRating(3)" class="star">☆</span>
+          <span onclick="setRating(4)" class="star">☆</span>
+          <span onclick="setRating(5)" class="star">☆</span>
+        </div>
+        <p id="ratingText" style="color: var(--gray); margin-top: 0.5rem;">Click to rate</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Your Feedback (Optional)</label>
+        <textarea class="form-textarea" id="feedbackComment" placeholder="Share your experience with this seller..."></textarea>
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+        <button class="btn btn-primary" onclick="submitFeedback()" style="flex: 1;">
+          <i class="fas fa-paper-plane"></i> Submit Feedback
+        </button>
+        <button class="btn btn-outline" onclick="closeFeedbackModal()" style="flex: 1;">
+          Skip
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .star { color: var(--gray-light); transition: color 0.2s; }
+    .star:hover, .star.active { color: #ffc107; }
+    .star.filled { color: #ffc107; }
+  </style>
+
+  <script src="../js/auth.js"></script>
+  <script src="../js/dashboard.js"></script>
+  <script>
+    // Check authentication
+    checkAuth('processor');
+
+    let pendingPurchase = null;
+    let currentRating = 0;
+    let pendingFeedback = null;
+
+    // Initialize dashboard
+    document.addEventListener('DOMContentLoaded', () => {
+      loadProcessorStats();
+      loadAvailableOilseeds();
+      loadMyByproducts();
+      loadPurchaseHistory();
+      loadByproductSalesHistory();
+      initProcessingChart();
+    });
+
+    // Upload byproduct form
+    document.getElementById('uploadByproductForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = {
+        productType: document.getElementById('productType').value,
+        sourceOilseed: document.getElementById('sourceOilseed').value,
+        quantity: document.getElementById('quantity').value,
+        price: document.getElementById('price').value,
+        batchNumber: document.getElementById('batchNumber').value,
+        expiryDate: document.getElementById('expiryDate').value,
+        storageCondition: document.getElementById('storageCondition').value,
+        nutritionContent: document.getElementById('nutritionContent').value,
+        description: document.getElementById('description').value
+      };
+
+      try {
+        await uploadByproduct(formData);
+        let div = document.querySelector('.noti');
+        let p = document.createElement('p');
+        p.textContent = 'Successfull';
+        div.append('Some initial text', p, 'More text at the end.');
+        window.location.href = "/frontend/pages/farmer-dashboard.html";
+        document.getElementById('uploadByproductForm').reset();
+        showTab('inventory');
+        loadMyByproducts();
+        loadProcessorStats();
+      } catch (error) {
+        console.log('Failed to list by-product. Please try again.');
+      }
+    });
+
+    // Purchase Modal Functions
+    function openPurchaseModal(oilseedId, maxQty, price, farmerName) {
+      pendingPurchase = { oilseedId, maxQty, price, farmerName };
+      const modal = document.getElementById('purchaseModal');
+      const content = document.getElementById('purchaseModalContent');
+      
+      content.innerHTML = `
+        <div class="form-group">
+          <label class="form-label">Product</label>
+          <p style="font-weight: 600;">${farmerName}'s Oilseed</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Available Quantity</label>
+          <p>${maxQty} quintals</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Price per Quintal</label>
+          <p>₹${price}</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="purchaseQty">Quantity to Purchase (quintals) *</label>
+          <input type="number" class="form-input" id="purchaseQty" min="1" max="${maxQty}" value="${maxQty}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Total Amount</label>
+          <p id="purchaseTotal" style="font-size: 1.25rem; font-weight: 700; color: var(--primary);">₹${maxQty * price}</p>
+        </div>
+      `;
+
+      document.getElementById('purchaseQty').addEventListener('input', function() {
+        const qty = parseFloat(this.value) || 0;
+        const total = qty * price;
+        document.getElementById('purchaseTotal').textContent = '₹' + total.toLocaleString();
+      });
+
+      modal.style.display = 'flex';
+    }
+
+    function closePurchaseModal() {
+      document.getElementById('purchaseModal').style.display = 'none';
+      pendingPurchase = null;
+    }
+
+    async function confirmPurchase() {
+      if (!pendingPurchase) return;
+
+      const quantity = document.getElementById('purchaseQty').value;
+      const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+
+      if (!quantity || quantity <= 0 || quantity > pendingPurchase.maxQty) {
+        alert('Please enter a valid quantity');
+        return;
+      }
+
+      try {
+        await apiRequest('/processor/buy-oilseed', {
+          method: 'POST',
+          body: JSON.stringify({
+            oilseedId: pendingPurchase.oilseedId,
+            quantity: parseFloat(quantity),
+            price: pendingPurchase.price,
+            paymentMethod
+          })
+        });
+
+        let div = document.querySelector('.noti');
+        let p = document.createElement('p');
+        p.textContent = 'Successfully';
+        div.append('Product', p, 'Uploaded');
+        
+        closePurchaseModal();
+
+        window.location.href = "/frontend/pages/processor-dashboard.html";
+        
+        // Open feedback modal
+        pendingFeedback = {
+          transactionId: pendingPurchase.oilseedId,
+          transactionType: 'raw_oilseed',
+          toUserId: null, // Will be set from the oilseed data
+          forName: pendingPurchase.farmerName
+        };
+        
+        setTimeout(() => {
+          openFeedbackModal(pendingPurchase.farmerName);
+        }, 500);
+
+        loadAvailableOilseeds();
+        loadProcessorStats();
+        loadPurchaseHistory();
+      } catch (error) {
+        console.log('Purchase failed: ' + error.message);
+      }
+    }
+
+    // Feedback Modal Functions
+    function openFeedbackModal(forName) {
+      document.getElementById('feedbackFor').textContent = `How was your experience with ${forName}?`;
+      document.getElementById('feedbackModal').style.display = 'flex';
+      currentRating = 0;
+      updateStarDisplay();
+    }
+
+    function closeFeedbackModal() {
+      document.getElementById('feedbackModal').style.display = 'none';
+      document.getElementById('feedbackComment').value = '';
+      currentRating = 0;
+      updateStarDisplay();
+    }
+
+    function setRating(rating) {
+      currentRating = rating;
+      updateStarDisplay();
+      const texts = ['Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+      document.getElementById('ratingText').textContent = texts[rating - 1];
+    }
+
+    function updateStarDisplay() {
+      const stars = document.querySelectorAll('.star');
+      stars.forEach((star, index) => {
+        if (index < currentRating) {
+          star.textContent = '★';
+          star.classList.add('filled');
+        } else {
+          star.textContent = '☆';
+          star.classList.remove('filled');
+        }
+      });
+    }
+
+    async function submitFeedback() {
+      if (currentRating === 0) {
+        alert('Please select a rating');
+        return;
+      }
+
+      try {
+        await apiRequest('/feedback/submit', {
+          method: 'POST',
+          body: JSON.stringify({
+            transactionId: pendingFeedback.transactionId,
+            transactionType: pendingFeedback.transactionType,
+            toUserId: pendingFeedback.toUserId,
+            rating: currentRating,
+            comment: document.getElementById('feedbackComment').value
+          })
+        });
+
+        alert('Thank you for your feedback!');
+        closeFeedbackModal();
+      } catch (error) {
+        alert('Failed to submit feedback: ' + error.message);
+      }
+    }
+
+    // Override buyOilseed function to use modal
+    function buyOilseed(oilseedId, maxQty, price) {
+      // Get farmer name from the available oilseeds
+      const oilseeds = JSON.parse(localStorage.getItem('availableOilseeds') || '[]');
+      const oilseed = oilseeds.find(o => o.id === oilseedId);
+      const farmerName = oilseed?.farmer?.full_name || oilseed?.farmer?.company_name || 'Unknown Farmer';
+      
+      openPurchaseModal(oilseedId, maxQty, price, farmerName);
+    }
+
+    // Tab switching
+    function showTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.getElementById(tabName).classList.add('active');
+
+      document.querySelectorAll('.sidebar-menu a').forEach(link => {
+        link.classList.remove('active');
+      });
+      if (event) event.target.classList.add('active');
+    }
+
+    function showSubTab(tabName) {
+      document.querySelectorAll('.sub-tab-content').forEach(tab => {
+        tab.style.display = 'none';
+      });
+      document.getElementById(tabName).style.display = 'block';
+
+      document.querySelectorAll('.tabs .tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      if (event) event.target.classList.add('active');
+    }
+
+    // Initialize processing chart
+    function initProcessingChart() {
+      const ctx = document.getElementById('processingChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Soymeal', 'Oil Cake', 'Husk', 'Other'],
+          datasets: [{
+            data: [45, 30, 15, 10],
+            backgroundColor: ['#2d5016', '#4a7c23', '#d4a574', '#e8c9a8']
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'right'
+            }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

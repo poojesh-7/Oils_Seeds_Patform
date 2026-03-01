@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up - OilSeed Pro</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="../index.html" class="logo">
+        <div class="logo-icon">🌱</div>
+        <span>OilSeed Pro</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="live-market.html">Live Market</a></li>
+        <li><a href="login.html" class="btn-primary">Login</a></li>
+      </ul>
+      <button class="mobile-menu-btn">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Auth Page -->
+  <div class="auth-page">
+    <div class="auth-container">
+      <div class="auth-header">
+        <h1 class="auth-title">Create Account</h1>
+        <p class="auth-subtitle">Join India's largest oilseed marketplace</p>
+      </div>
+      <div class="auth-body">
+        <div id="alertContainer"></div>
+        
+        <form id="signupForm">
+          <div class="form-group">
+            <label class="form-label">I am a:</label>
+            <div class="role-selector">
+              <div class="role-option" data-role="farmer">
+                <div class="role-option-icon">👨‍🌾</div>
+                <div class="role-option-label">Farmer</div>
+              </div>
+              <div class="role-option" data-role="processor">
+                <div class="role-option-icon">🏭</div>
+                <div class="role-option-label">Processor</div>
+              </div>
+              <div class="role-option" data-role="buyer">
+                <div class="role-option-icon">🤝</div>
+                <div class="role-option-label">Buyer</div>
+              </div>
+            </div>
+            <input type="hidden" id="role" name="role" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="fullName">Full Name *</label>
+            <input type="text" class="form-input" id="fullName" name="fullName" placeholder="Enter your full name" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="email">Email Address *</label>
+            <input type="email" class="form-input" id="email" name="email" placeholder="Enter your email" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="phone">Phone Number *</label>
+            <input type="tel" class="form-input" id="phone" name="phone" placeholder="Enter your phone number" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="location">Location (City/State) *</label>
+            <input type="text" class="form-input" id="location" name="location" placeholder="e.g., Indore, Madhya Pradesh" required>
+          </div>
+
+          <div class="form-group" id="companyGroup" style="display: none;">
+            <label class="form-label" for="companyName">Company/Farm Name</label>
+            <input type="text" class="form-input" id="companyName" name="companyName" placeholder="Enter company or farm name">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="password">Password *</label>
+            <input type="password" class="form-input" id="password" name="password" placeholder="Create a password (min 6 characters)" required minlength="6">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="confirmPassword">Confirm Password *</label>
+            <input type="password" class="form-input" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%;">
+            <i class="fas fa-user-plus"></i>
+            Create Account
+          </button>
+        </form>
+      </div>
+      <div class="auth-footer">
+        <p>Already have an account? <a href="login.html" class="auth-link">Login here</a></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/auth.js"></script>
+  <script>
+    // Role selection
+    const roleOptions = document.querySelectorAll('.role-option');
+    const roleInput = document.getElementById('role');
+    const companyGroup = document.getElementById('companyGroup');
+
+    roleOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        roleOptions.forEach(opt => opt.classList.remove('selected'));
+        option.classList.add('selected');
+        roleInput.value = option.dataset.role;
+        
+        // Show company name for processors and buyers
+        if (option.dataset.role === 'processor' || option.dataset.role === 'buyer') {
+          companyGroup.style.display = 'block';
+        } else {
+          companyGroup.style.display = 'none';
+        }
+      });
+    });
+
+    // Check URL params for pre-selected role
+    const urlParams = new URLSearchParams(window.location.search);
+    const preSelectedRole = urlParams.get('role');
+    if (preSelectedRole) {
+      const roleOption = document.querySelector(`[data-role="${preSelectedRole}"]`);
+      if (roleOption) {
+        roleOption.click();
+      }
+    }
+
+    // Form submission
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      
+      if (password !== confirmPassword) {
+        showAlert('Passwords do not match!', 'error');
+        return;
+      }
+
+      if (!roleInput.value) {
+        showAlert('Please select your role!', 'error');
+        return;
+      }
+
+      const formData = {
+        fullName: document.getElementById('fullName').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        location: document.getElementById('location').value,
+        companyName: document.getElementById('companyName').value,
+        password: password,
+        role: roleInput.value
+      };
+
+      try {
+        const result = await register(formData);
+        showAlert('Account created successfully! Redirecting...', 'success');
+        setTimeout(() => {
+          window.location.href = 'login.html';
+        }, 1500);
+      } catch (error) {
+        showAlert(error.message || 'Registration failed. Please try again.', 'error');
+      }
+    });
+
+    function showAlert(message, type) {
+      const alertContainer = document.getElementById('alertContainer');
+      alertContainer.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+    }
+  </script>
+</body>
+</html>

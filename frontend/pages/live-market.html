@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Market - OilSeed Pro</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="../index.html" class="logo">
+        <div class="logo-icon">🌱</div>
+        <span>OilSeed Pro</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="live-market.html">Live Market</a></li>
+        <li><a href="login.html" class="btn-primary">Login / Register</a></li>
+      </ul>
+      <button class="mobile-menu-btn">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Live Market Content -->
+  <div class="dashboard" style="padding-top: 100px;">
+    <div class="dashboard-container">
+      <div class="dashboard-header">
+        <h1 class="dashboard-title">Live Market Prices</h1>
+        <p class="dashboard-subtitle">Real-time oilseed and by-product prices across major Indian markets</p>
+      </div>
+
+      <!-- Market Overview Cards -->
+      <div class="stats-grid" style="margin-bottom: 2rem;">
+        <div class="stat-card">
+          <div class="stat-card-icon"><i class="fas fa-chart-line"></i></div>
+          <div class="stat-card-value" id="marketTrend">+2.4%</div>
+          <div class="stat-card-label">Market Trend (24h)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon"><i class="fas fa-exchange-alt"></i></div>
+          <div class="stat-card-value" id="totalVolume">₹45Cr</div>
+          <div class="stat-card-label">Today's Volume</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon"><i class="fas fa-list"></i></div>
+          <div class="stat-card-value" id="activeListings">1,245</div>
+          <div class="stat-card-label">Active Listings</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon"><i class="fas fa-users"></i></div>
+          <div class="stat-card-value" id="activeTraders">3,567</div>
+          <div class="stat-card-label">Active Traders</div>
+        </div>
+      </div>
+
+      <!-- Price Charts -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Raw Oilseed Prices (7 Days)</h3>
+          </div>
+          <div class="card-body">
+            <canvas id="rawOilseedChart" height="150"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">By-Product Prices (7 Days)</h3>
+          </div>
+          <div class="card-body">
+            <canvas id="byproductChart" height="150"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Current Prices Table -->
+      <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+          <h3 class="card-title">Current Market Prices</h3>
+          <span style="color: var(--gray); font-size: 0.875rem;">Last updated: <span id="lastUpdated">Just now</span></span>
+        </div>
+        <div class="card-body">
+          <div class="table-container">
+            <table class="data-table" id="marketPricesTable">
+              <thead>
+                <tr>
+                  <th>Commodity</th>
+                  <th>Market</th>
+                  <th>Price/Quintal</th>
+                  <th>Change</th>
+                  <th>Volume</th>
+                  <th>Trend</th>
+                </tr>
+              </thead>
+              <tbody id="marketPricesBody">
+                <!-- Data will be populated by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Export Opportunities -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Export Opportunities</h3>
+        </div>
+        <div class="card-body">
+          <div class="product-grid" id="exportOpportunities">
+            <div class="product-card">
+              <div class="product-image">🌏</div>
+              <div class="product-content">
+                <h4 class="product-title">Soymeal Export</h4>
+                <div class="product-meta">
+                  <span class="product-meta-item">🇹🇭 Thailand</span>
+                  <span class="product-meta-item">5000 MT</span>
+                </div>
+                <div class="product-price">$480-520/MT</div>
+                <p style="font-size: 0.875rem; color: var(--gray); margin-bottom: 1rem;">Requirements: ISO 22000, Non-GMO</p>
+                <button class="btn btn-primary btn-sm" style="width: 100%;">Express Interest</button>
+              </div>
+            </div>
+            <div class="product-card">
+              <div class="product-image">🌍</div>
+              <div class="product-content">
+                <h4 class="product-title">Groundnut Cake</h4>
+                <div class="product-meta">
+                  <span class="product-meta-item">🇦🇪 UAE</span>
+                  <span class="product-meta-item">3000 MT</span>
+                </div>
+                <div class="product-price">$380-450/MT</div>
+                <p style="font-size: 0.875rem; color: var(--gray); margin-bottom: 1rem;">Requirements: Halal Certified</p>
+                <button class="btn btn-primary btn-sm" style="width: 100%;">Express Interest</button>
+              </div>
+            </div>
+            <div class="product-card">
+              <div class="product-image">🌎</div>
+              <div class="product-content">
+                <h4 class="product-title">Mustard Husk</h4>
+                <div class="product-meta">
+                  <span class="product-meta-item">🇩🇪 Germany</span>
+                  <span class="product-meta-item">2000 MT</span>
+                </div>
+                <div class="product-price">$200-280/MT</div>
+                <p style="font-size: 0.875rem; color: var(--gray); margin-bottom: 1rem;">Requirements: Organic Certified</p>
+                <button class="btn btn-primary btn-sm" style="width: 100%;">Express Interest</button>
+              </div>
+            </div>
+            <div class="product-card">
+              <div class="product-image">🌏</div>
+              <div class="product-content">
+                <h4 class="product-title">Sunflower Meal</h4>
+                <div class="product-meta">
+                  <span class="product-meta-item">🇰🇷 South Korea</span>
+                  <span class="product-meta-item">8000 MT</span>
+                </div>
+                <div class="product-price">$320-380/MT</div>
+                <p style="font-size: 0.875rem; color: var(--gray); margin-bottom: 1rem;">Requirements: Aflatoxin &lt;20ppb</p>
+                <button class="btn btn-primary btn-sm" style="width: 100%;">Express Interest</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <div class="logo-icon">🌱</div>
+            <span>OilSeed Pro</span>
+          </div>
+          <p class="footer-description">
+            India's leading digital marketplace for oilseed by-products.
+          </p>
+        </div>
+        <div>
+          <h4 class="footer-title">Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="live-market.html">Live Market</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-title">Contact</h4>
+          <ul class="footer-links">
+            <li><i class="fas fa-envelope"></i> support@oilseedpro.com</li>
+            <li><i class="fas fa-phone"></i> +91 1800-123-4567</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copyright">© 2024 OilSeed Pro. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script>
+    // Market data
+    const marketData = [
+      { commodity: 'Soybean', market: 'Indore', price: 4850, change: 2.3, volume: '12,500 q', trend: 'up' },
+      { commodity: 'Groundnut', market: 'Rajkot', price: 6200, change: 1.8, volume: '8,300 q', trend: 'up' },
+      { commodity: 'Mustard', market: 'Jaipur', price: 5400, change: -0.5, volume: '15,200 q', trend: 'down' },
+      { commodity: 'Sunflower', market: 'Latur', price: 5950, change: 3.1, volume: '6,800 q', trend: 'up' },
+      { commodity: 'Sesame', market: 'Gondal', price: 9200, change: 0.8, volume: '4,500 q', trend: 'up' },
+      { commodity: 'Cottonseed', market: 'Kadi', price: 3200, change: -1.2, volume: '22,000 q', trend: 'down' },
+      { commodity: 'Soymeal', market: 'Indore', price: 4200, change: 1.5, volume: '18,500 q', trend: 'up' },
+      { commodity: 'Groundnut Cake', market: 'Rajkot', price: 2800, change: 0.5, volume: '9,200 q', trend: 'up' },
+      { commodity: 'Mustard Husk', market: 'Jaipur', price: 1200, change: -0.8, volume: '25,000 q', trend: 'down' }
+    ];
+
+    // Populate market prices table
+    function populateMarketTable() {
+      const tbody = document.getElementById('marketPricesBody');
+      tbody.innerHTML = marketData.map(item => `
+        <tr>
+          <td><strong>${item.commodity}</strong></td>
+          <td>${item.market}</td>
+          <td>₹${item.price.toLocaleString()}</td>
+          <td>
+            <span class="badge ${item.change >= 0 ? 'badge-success' : 'badge-danger'}">
+              <i class="fas fa-arrow-${item.change >= 0 ? 'up' : 'down'}"></i>
+              ${Math.abs(item.change)}%
+            </span>
+          </td>
+          <td>${item.volume}</td>
+          <td>
+            <canvas id="sparkline-${item.commodity.replace(/\s+/g, '')}" width="60" height="20"></canvas>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Initialize charts
+    function initCharts() {
+      // Raw oilseed chart
+      const rawCtx = document.getElementById('rawOilseedChart').getContext('2d');
+      new Chart(rawCtx, {
+        type: 'line',
+        data: {
+          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          datasets: [
+            {
+              label: 'Soybean',
+              data: [4750, 4800, 4780, 4820, 4850, 4830, 4850],
+              borderColor: '#2d5016',
+              backgroundColor: 'rgba(45, 80, 22, 0.1)',
+              fill: true
+            },
+            {
+              label: 'Groundnut',
+              data: [6100, 6150, 6120, 6180, 6200, 6190, 6200],
+              borderColor: '#d4a574',
+              backgroundColor: 'rgba(212, 165, 116, 0.1)',
+              fill: true
+            },
+            {
+              label: 'Mustard',
+              data: [5450, 5420, 5380, 5400, 5420, 5390, 5400],
+              borderColor: '#e9c46a',
+              backgroundColor: 'rgba(233, 196, 106, 0.1)',
+              fill: true
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'top'
+            }
+          },
+          scales: {
+            y: {
+              ticks: {
+                callback: value => '₹' + value
+              }
+            }
+          }
+        }
+      });
+
+      // By-product chart
+      const byproductCtx = document.getElementById('byproductChart').getContext('2d');
+      new Chart(byproductCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Soymeal', 'Oil Cake', 'Husk', 'De-oiled Cake', 'Lecithin'],
+          datasets: [{
+            label: 'Current Price (₹/kg)',
+            data: [42, 28, 12, 35, 180],
+            backgroundColor: ['#2d5016', '#4a7c23', '#d4a574', '#e8c9a8', '#f4a261']
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: value => '₹' + value
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Update last updated time
+    function updateLastUpdated() {
+      const now = new Date();
+      document.getElementById('lastUpdated').textContent = now.toLocaleTimeString();
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      populateMarketTable();
+      initCharts();
+      updateLastUpdated();
+
+      // Simulate live updates
+      setInterval(() => {
+        updateLastUpdated();
+        // Randomly update some prices
+        marketData.forEach(item => {
+          const change = (Math.random() - 0.5) * 10;
+          item.price = Math.round(item.price + change);
+        });
+        populateMarketTable();
+      }, 30000);
+    });
+  </script>
+</body>
+</html>

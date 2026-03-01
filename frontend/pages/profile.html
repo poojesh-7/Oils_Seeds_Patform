@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile - OilSeed Pro</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="../index.html" class="logo">
+        <div class="logo-icon">🌱</div>
+        <span>OilSeed Pro</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="live-market.html">Live Market</a></li>
+        <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+        <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Profile Content -->
+  <div class="dashboard" style="padding-top: 100px;">
+    <div class="dashboard-container">
+      <div class="dashboard-header">
+        <h1 class="dashboard-title">My Profile</h1>
+        <p class="dashboard-subtitle">Manage your account, view upload history and transactions</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 300px 1fr; gap: 2rem;">
+        <!-- Profile Sidebar -->
+        <div class="card" style="height: fit-content;">
+          <div class="card-body" style="text-align: center;">
+            <div style="width: 120px; height: 120px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); border-radius: 50%; margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center; font-size: 4rem; color: white;">
+              <span id="profileAvatar">👤</span>
+            </div>
+            <h3 id="profileName" style="margin-bottom: 0.5rem;">Loading...</h3>
+            <span id="profileRole" class="badge badge-success" style="margin-bottom: 1rem; display: inline-block;">Loading...</span>
+            <p id="profileLocation" style="color: var(--gray);"><i class="fas fa-map-marker-alt"></i> Loading...</p>
+            <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--gray-light);">
+            <div style="text-align: left;">
+              <p style="margin-bottom: 0.5rem;"><i class="fas fa-envelope" style="width: 20px; color: var(--primary);"></i> <span id="profileEmail">Loading...</span></p>
+              <p style="margin-bottom: 0.5rem;"><i class="fas fa-phone" style="width: 20px; color: var(--primary);"></i> <span id="profilePhone">Loading...</span></p>
+              <p><i class="fas fa-building" style="width: 20px; color: var(--primary);"></i> <span id="profileCompany">Loading...</span></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Content -->
+        <div>
+          <!-- Stats Cards -->
+          <div class="stats-grid" style="margin-bottom: 2rem;">
+            <div class="stat-card">
+              <div class="stat-card-icon"><i class="fas fa-upload"></i></div>
+              <div class="stat-card-value" id="stat1">0</div>
+              <div class="stat-card-label" id="stat1Label">Uploads</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-icon"><i class="fas fa-exchange-alt"></i></div>
+              <div class="stat-card-value" id="stat2">0</div>
+              <div class="stat-card-label" id="stat2Label">Transactions</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-icon"><i class="fas fa-rupee-sign"></i></div>
+              <div class="stat-card-value" id="stat3">₹0</div>
+              <div class="stat-card-label" id="stat3Label">Total Value</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-icon"><i class="fas fa-star"></i></div>
+              <div class="stat-card-value" id="userRating">-</div>
+              <div class="stat-card-label"><span id="reviewCount">0</span> Reviews</div>
+            </div>
+          </div>
+
+          <!-- Ratings & Feedback Section -->
+          <div class="card" style="margin-bottom: 2rem;">
+            <div class="card-header">
+              <h3 class="card-title"><i class="fas fa-star"></i> My Ratings & Feedback</h3>
+            </div>
+            <div class="card-body">
+              <div id="feedbackSection">
+                <div class="loading"><div class="spinner"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Edit Profile -->
+          <div class="card" style="margin-bottom: 2rem;">
+            <div class="card-header">
+              <h3 class="card-title">Edit Profile</h3>
+            </div>
+            <div class="card-body">
+              <form id="profileForm">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                  <div class="form-group">
+                    <label class="form-label" for="editFullName">Full Name</label>
+                    <input type="text" class="form-input" id="editFullName" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="editPhone">Phone Number</label>
+                    <input type="tel" class="form-input" id="editPhone" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="editLocation">Location</label>
+                    <input type="text" class="form-input" id="editLocation" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="editCompany">Company/Farm Name</label>
+                    <input type="text" class="form-input" id="editCompany">
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-save"></i>
+                  Save Changes
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Upload History -->
+          <div class="card" style="margin-bottom: 2rem;">
+            <div class="card-header">
+              <h3 class="card-title"><i class="fas fa-history"></i> My Upload History</h3>
+            </div>
+            <div class="card-body">
+              <div class="table-container">
+                <table class="data-table" id="uploadTable">
+                  <thead>
+                    <tr id="uploadHeader">
+                      <th>Batch ID</th>
+                      <th>Product</th>
+                      <th>Quantity</th>
+                      <th>Price</th>
+                      <th>Status</th>
+                      <th>Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td colspan="6" class="loading">
+                        <div class="spinner"></div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Transaction History -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title"><i class="fas fa-receipt"></i> Transaction History</h3>
+            </div>
+            <div class="card-body">
+              <div class="table-container">
+                <table class="data-table" id="transactionTable">
+                  <thead>
+                    <tr id="transactionHeader">
+                      <th>Date</th>
+                      <th>Type</th>
+                      <th>Batch ID</th>
+                      <th>Product</th>
+                      <th>Details</th>
+                      <th>Quantity</th>
+                      <th>Amount</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td colspan="8" class="loading">
+                        <div class="spinner"></div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <div class="logo-icon">🌱</div>
+            <span>OilSeed Pro</span>
+          </div>
+          <p class="footer-description">
+            India's leading digital marketplace for oilseed by-products.
+          </p>
+        </div>
+        <div>
+          <h4 class="footer-title">Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="live-market.html">Live Market</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-title">Contact</h4>
+          <ul class="footer-links">
+            <li><i class="fas fa-envelope"></i> support@oilseedpro.com</li>
+            <li><i class="fas fa-phone"></i> +91 1800-123-4567</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copyright">© 2024 OilSeed Pro. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/auth.js"></script>
+  <script src="../js/dashboard.js"></script>
+  <script>
+    // Check authentication
+    checkAuth();
+
+    // Load profile data
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadProfileData();
+      await loadUploadHistory();
+      await loadTransactionHistory();
+      await loadFeedback();
+    });
+
+    // Profile form submission
+    document.getElementById('profileForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = {
+        fullName: document.getElementById('editFullName').value,
+        phone: document.getElementById('editPhone').value,
+        location: document.getElementById('editLocation').value,
+        companyName: document.getElementById('editCompany').value
+      };
+
+      try {
+        await updateProfile(formData);
+        alert('Profile updated successfully!');
+        loadProfileData();
+      } catch (error) {
+        alert('Failed to update profile. Please try again.');
+      }
+    });
+
+    // Load profile data
+    async function loadProfileData() {
+      try {
+        const profile = await getProfile();
+        const user = profile.user;
+        const stats = profile.stats;
+
+        // Update profile display
+        document.getElementById('profileName').textContent = user.full_name;
+        document.getElementById('profileRole').textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+        document.getElementById('profileLocation').innerHTML = `<i class="fas fa-map-marker-alt"></i> ${user.location || 'Not specified'}`;
+        document.getElementById('profileEmail').textContent = user.email;
+        document.getElementById('profilePhone').textContent = user.phone;
+        document.getElementById('profileCompany').textContent = user.company_name || 'Not specified';
+
+        // Update avatar based on role
+        const avatars = {
+          farmer: '👨‍🌾',
+          processor: '🏭',
+          buyer: '🤝'
+        };
+        document.getElementById('profileAvatar').textContent = avatars[user.role] || '👤';
+
+        // Update stats based on role
+        if (user.role === 'farmer') {
+          document.getElementById('stat1').textContent = stats.totalListings || 0;
+          document.getElementById('stat1Label').textContent = 'Total Listings';
+          document.getElementById('stat2').textContent = stats.totalSales || 0;
+          document.getElementById('stat2Label').textContent = 'Total Sales';
+          document.getElementById('stat3').textContent = '₹' + (stats.totalRevenue || 0).toLocaleString();
+          document.getElementById('stat3Label').textContent = 'Total Revenue';
+        } else if (user.role === 'processor') {
+          document.getElementById('stat1').textContent = stats.totalByproducts || 0;
+          document.getElementById('stat1Label').textContent = 'By-Products';
+          document.getElementById('stat2').textContent = (stats.totalPurchases || 0) + (stats.totalSales || 0);
+          document.getElementById('stat2Label').textContent = 'Total Transactions';
+          document.getElementById('stat3').textContent = '₹' + ((stats.salesValue || 0) + (stats.purchaseValue || 0)).toLocaleString();
+          document.getElementById('stat3Label').textContent = 'Total Value';
+        } else if (user.role === 'buyer') {
+          document.getElementById('stat1').textContent = stats.totalPurchases || 0;
+          document.getElementById('stat1Label').textContent = 'Total Purchases';
+          document.getElementById('stat2').textContent = stats.totalPurchases || 0;
+          document.getElementById('stat2Label').textContent = 'Transactions';
+          document.getElementById('stat3').textContent = '₹' + (stats.totalSpent || 0).toLocaleString();
+          document.getElementById('stat3Label').textContent = 'Total Spent';
+        }
+
+        // Fill form
+        document.getElementById('editFullName').value = user.full_name;
+        document.getElementById('editPhone').value = user.phone;
+        document.getElementById('editLocation').value = user.location || '';
+        document.getElementById('editCompany').value = user.company_name || '';
+
+      } catch (error) {
+        console.error('Error loading profile:', error);
+      }
+    }
+
+    // Load upload history
+    async function loadUploadHistory() {
+      try {
+        const uploads = await getUploadHistory();
+        const tbody = document.querySelector('#uploadTable tbody');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+        if (!uploads || uploads.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2rem;">No uploads yet. <a href="${user.role}-dashboard.html">Upload now</a></td></tr>`;
+          return;
+        }
+
+        let html = '';
+        
+        if (user.role === 'farmer') {
+          html = uploads.map(item => `
+            <tr>
+              <td><span class="badge badge-warning">${item.batch_id}</span></td>
+              <td><strong>${item.product}</strong></td>
+              <td>${item.quantity} ${item.unit}</td>
+              <td>₹${item.price}/${item.unit}</td>
+              <td><span class="badge ${item.status === 'available' ? 'badge-success' : item.status === 'sold' ? 'badge-danger' : 'badge-warning'}">${item.status}</span></td>
+              <td>${new Date(item.created_at).toLocaleDateString()}</td>
+            </tr>
+          `).join('');
+        } else if (user.role === 'processor') {
+          html = uploads.map(item => `
+            <tr>
+              <td><span class="badge badge-warning">${item.batch_id}</span></td>
+              <td><strong>${item.product}</strong> <small style="color: var(--gray);">(${item.source})</small></td>
+              <td>${item.quantity} ${item.unit}</td>
+              <td>₹${item.price}/${item.unit}</td>
+              <td><span class="badge ${item.status === 'available' ? 'badge-success' : item.status === 'sold_out' ? 'badge-danger' : 'badge-warning'}">${item.status}</span></td>
+              <td>${new Date(item.created_at).toLocaleDateString()}</td>
+            </tr>
+          `).join('');
+        } else {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem;">Buyers don\'t have upload history</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = html;
+
+      } catch (error) {
+        console.error('Error loading upload history:', error);
+        document.querySelector('#uploadTable tbody').innerHTML = 
+          '<tr><td colspan="6" style="text-align: center; padding: 2rem;">Failed to load upload history</td></tr>';
+      }
+    }
+
+    // Load transaction history
+    async function loadTransactionHistory() {
+      try {
+        const transactions = await getTransactionHistory();
+        const tbody = document.querySelector('#transactionTable tbody');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+        if (!transactions || transactions.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 2rem;">No transactions yet</td></tr>';
+          return;
+        }
+
+        let html = '';
+        
+        if (user.role === 'farmer') {
+          // Farmer sees: (batch_id, processor1 has bought your product)
+          html = transactions.map(t => `
+            <tr>
+              <td>${new Date(t.created_at).toLocaleDateString()}</td>
+              <td><span class="badge badge-success">SALE</span></td>
+              <td><span class="badge badge-warning">${t.id.slice(0, 8).toUpperCase()}</span></td>
+              <td><strong>${t.raw_oilseeds?.oilseed_type || 'N/A'}</strong></td>
+              <td><i class="fas fa-arrow-right" style="color: var(--success);"></i> <strong>${t.buyer?.full_name || t.buyer?.company_name || 'Unknown'}</strong> bought your product</td>
+              <td>${t.quantity} q</td>
+              <td>₹${t.total_amount?.toLocaleString()}</td>
+              <td><span class="badge badge-success">Completed</span></td>
+            </tr>
+          `).join('');
+        } else if (user.role === 'processor') {
+          // Processor sees:
+          // - (batch_id, You have bought from farmer1) for purchases
+          // - (batch_id, buyer1 has bought your product) for sales
+          const allTransactions = [
+            ...(transactions.purchases || []).map(t => ({...t, transactionType: 'PURCHASE'})),
+            ...(transactions.sales || []).map(t => ({...t, transactionType: 'SALE'}))
+          ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+          
+          html = allTransactions.map(t => {
+            if (t.transactionType === 'PURCHASE') {
+              // Purchase from farmer
+              return `
+                <tr>
+                  <td>${new Date(t.created_at).toLocaleDateString()}</td>
+                  <td><span class="badge badge-primary">PURCHASE</span></td>
+                  <td><span class="badge badge-warning">${t.id.slice(0, 8).toUpperCase()}</span></td>
+                  <td><strong>${t.raw_oilseeds?.oilseed_type || 'N/A'}</strong></td>
+                  <td><i class="fas fa-arrow-left" style="color: var(--primary);"></i> You bought from <strong>${t.seller?.full_name || t.seller?.company_name || 'Unknown'}</strong></td>
+                  <td>${t.quantity} q</td>
+                  <td>₹${t.total_amount?.toLocaleString()}</td>
+                  <td><span class="badge badge-success">Completed</span></td>
+                </tr>
+              `;
+            } else {
+              // Sale to buyer
+              return `
+                <tr>
+                  <td>${new Date(t.created_at).toLocaleDateString()}</td>
+                  <td><span class="badge badge-success">SALE</span></td>
+                  <td><span class="badge badge-warning">${t.byproducts?.batch_number || t.id.slice(0, 8).toUpperCase()}</span></td>
+                  <td><strong>${t.byproducts?.product_type || 'N/A'}</strong></td>
+                  <td><i class="fas fa-arrow-right" style="color: var(--success);"></i> <strong>${t.buyer?.full_name || t.buyer?.company_name || 'Unknown'}</strong> bought your product</td>
+                  <td>${t.quantity} kg</td>
+                  <td>₹${t.total_amount?.toLocaleString()}</td>
+                  <td><span class="badge badge-success">Completed</span></td>
+                </tr>
+              `;
+            }
+          }).join('');
+        } else if (user.role === 'buyer') {
+          // Buyer sees: (batch_id, You have bought from processor1)
+          html = transactions.map(t => `
+            <tr>
+              <td>${new Date(t.created_at).toLocaleDateString()}</td>
+              <td><span class="badge badge-primary">PURCHASE</span></td>
+              <td><span class="badge badge-warning">${t.byproducts?.batch_number || t.id.slice(0, 8).toUpperCase()}</span></td>
+              <td><strong>${t.byproducts?.product_type || 'N/A'}</strong></td>
+              <td><i class="fas fa-arrow-left" style="color: var(--primary);"></i> You bought from <strong>${t.seller?.full_name || t.seller?.company_name || 'Unknown'}</strong></td>
+              <td>${t.quantity} kg</td>
+              <td>₹${t.total_amount?.toLocaleString()}</td>
+              <td><span class="badge badge-success">Completed</span></td>
+            </tr>
+          `).join('');
+        }
+
+        tbody.innerHTML = html;
+
+      } catch (error) {
+        console.error('Error loading transactions:', error);
+        document.querySelector('#transactionTable tbody').innerHTML = 
+          '<tr><td colspan="8" style="text-align: center; padding: 2rem;">Failed to load transactions</td></tr>';
+      }
+    }
+
+    // Load feedback for the user
+    async function loadFeedback() {
+      try {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const response = await fetch(`${API_BASE_URL}/feedback/user/${user.id}`, {
+          headers: { 'Authorization': `Bearer ${getToken()}` }
+        });
+        
+        const data = await response.json();
+        
+        // Update rating stats
+        document.getElementById('userRating').textContent = data.averageRating || '-';
+        document.getElementById('reviewCount').textContent = data.totalReviews || '0';
+        
+        // Display feedback list
+        const feedbackSection = document.getElementById('feedbackSection');
+        
+        if (!data.feedback || data.feedback.length === 0) {
+          feedbackSection.innerHTML = '<p style="text-align: center; color: var(--gray); padding: 2rem;">No feedback yet</p>';
+          return;
+        }
+        
+        feedbackSection.innerHTML = data.feedback.map(f => `
+          <div style="border-bottom: 1px solid var(--gray-light); padding: 1rem 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <div>
+                <strong>${f.from_user?.full_name || f.from_user?.company_name || 'Anonymous'}</strong>
+                <span style="color: var(--gray); font-size: 0.875rem;"> - ${new Date(f.created_at).toLocaleDateString()}</span>
+              </div>
+              <div style="color: #ffc107;">
+                ${'★'.repeat(f.rating)}${'☆'.repeat(5 - f.rating)}
+              </div>
+            </div>
+            <p style="color: var(--dark); margin: 0;">${f.comment || 'No comment'}</p>
+          </div>
+        `).join('');
+        
+      } catch (error) {
+        console.error('Error loading feedback:', error);
+        document.getElementById('feedbackSection').innerHTML = 
+          '<p style="text-align: center; color: var(--gray); padding: 2rem;">Failed to load feedback</p>';
+      }
+    }
+  </script>
+</body>
+</html>

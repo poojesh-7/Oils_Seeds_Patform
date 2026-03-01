@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - OilSeed Pro</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .forgot-password-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+    .forgot-password-modal.active {
+      display: flex;
+    }
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 16px;
+      max-width: 450px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    .step-indicator {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .step-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--gray-light);
+    }
+    .step-dot.active {
+      background: var(--primary);
+    }
+    .otp-inputs {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+    .otp-input {
+      width: 50px;
+      height: 50px;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      border: 2px solid var(--gray-light);
+      border-radius: 8px;
+    }
+    .otp-input:focus {
+      border-color: var(--primary);
+      outline: none;
+    }
+    .resend-otp {
+      text-align: center;
+      color: var(--gray);
+      font-size: 0.875rem;
+    }
+    .resend-otp a {
+      color: var(--primary);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="../index.html" class="logo">
+        <div class="logo-icon">🌱</div>
+        <span>OilSeed Pro</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="live-market.html">Live Market</a></li>
+        <li><a href="signup.html" class="btn-primary">Sign Up</a></li>
+      </ul>
+      <button class="mobile-menu-btn">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Auth Page -->
+  <div class="auth-page">
+    <div class="auth-container">
+      <div class="auth-header">
+        <h1 class="auth-title">Welcome Back</h1>
+        <p class="auth-subtitle">Login to access your dashboard</p>
+      </div>
+      <div class="auth-body">
+        <div id="alertContainer"></div>
+        
+        <form id="loginForm">
+          <div class="form-group">
+            <label class="form-label" for="email">Email Address *</label>
+            <input type="email" class="form-input" id="email" name="email" placeholder="Enter your email" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="password">Password *</label>
+            <input type="password" class="form-input" id="password" name="password" placeholder="Enter your password" required>
+          </div>
+
+          <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+              <input type="checkbox" id="rememberMe">
+              <span style="font-size: 0.875rem; color: var(--gray);">Remember me</span>
+            </label>
+            <a href="#" onclick="openForgotModal()" style="font-size: 0.875rem; color: var(--primary);">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%;">
+            <i class="fas fa-sign-in-alt"></i>
+            Login
+          </button>
+        </form>
+
+        <div style="text-align: center; margin: 1.5rem 0;">
+          <p style="color: var(--gray);">Or login as:</p>
+          <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem;">
+            <button onclick="quickLogin('farmer')" class="btn btn-outline" style="font-size: 0.875rem;">
+              👨‍🌾 Demo Farmer
+            </button>
+            <button onclick="quickLogin('processor')" class="btn btn-outline" style="font-size: 0.875rem;">
+              🏭 Demo Processor
+            </button>
+            <button onclick="quickLogin('buyer')" class="btn btn-outline" style="font-size: 0.875rem;">
+              🤝 Demo Buyer
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="auth-footer">
+        <p>Don't have an account? <a href="signup.html" class="auth-link">Sign up here</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Forgot Password Modal -->
+  <div id="forgotModal" class="forgot-password-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Reset Password</h3>
+        <p style="color: var(--gray);">Follow the steps to reset your password</p>
+      </div>
+
+      <!-- Step Indicator -->
+      <div class="step-indicator">
+        <div class="step-dot active" id="step1"></div>
+        <div class="step-dot" id="step2"></div>
+        <div class="step-dot" id="step3"></div>
+      </div>
+
+      <div id="modalAlert"></div>
+
+      <!-- Step 1: Enter Email -->
+      <div id="step1Content">
+        <div class="form-group">
+          <label class="form-label">Enter your email address</label>
+          <input type="email" class="form-input" id="forgotEmail" placeholder="your@email.com">
+        </div>
+        <button class="btn btn-primary" style="width: 100%;" onclick="sendOTP()">
+          <i class="fas fa-paper-plane"></i> Send OTP
+        </button>
+      </div>
+
+      <!-- Step 2: Enter OTP -->
+      <div id="step2Content" style="display: none;">
+        <p style="text-align: center; margin-bottom: 1rem;">Enter the 6-digit OTP sent to your email</p>
+        <div class="otp-inputs">
+          <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 0)">
+          <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 1)">
+          <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 2)">
+          <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 3)">
+          <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 4)">
+          <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 5)">
+        </div>
+        <p class="resend-otp">Didn't receive? <a href="#" onclick="resendOTP()">Resend OTP</a></p>
+        <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="verifyOTP()">
+          <i class="fas fa-check"></i> Verify OTP
+        </button>
+      </div>
+
+      <!-- Step 3: Reset Password -->
+      <div id="step3Content" style="display: none;">
+        <div class="form-group">
+          <label class="form-label">New Password</label>
+          <input type="password" class="form-input" id="newPassword" placeholder="Min 6 characters">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm New Password</label>
+          <input type="password" class="form-input" id="confirmNewPassword" placeholder="Confirm password">
+        </div>
+        <button class="btn btn-primary" style="width: 100%;" onclick="resetPassword()">
+          <i class="fas fa-lock"></i> Reset Password
+        </button>
+      </div>
+
+      <button class="btn btn-outline" style="width: 100%; margin-top: 1rem;" onclick="closeForgotModal()">
+        Cancel
+      </button>
+    </div>
+  </div>
+
+  <script src="../js/auth.js"></script>
+  <script>
+    let resetEmail = '';
+    let resetToken = '';
+
+    // Form submission
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = {
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value
+      };
+
+      try {
+        const result = await login(formData);
+        showAlert('Login successful! Redirecting...', 'success');
+        
+        // Redirect based on role
+        setTimeout(() => {
+          redirectToDashboard(result.user.role);
+        }, 1000);
+      } catch (error) {
+        showAlert(error.message || 'Login failed. Please check your credentials.', 'error');
+      }
+    });
+
+    // Quick login for demo
+    async function quickLogin(role) {
+      const demoCredentials = {
+        farmer: { email: 'farmer@demo.com', password: 'demo123' },
+        processor: { email: 'processor@demo.com', password: 'demo123' },
+        buyer: { email: 'buyer@demo.com', password: 'demo123' }
+      };
+
+      try {
+        const result = await login(demoCredentials[role]);
+        showAlert(`Logged in as ${role}! Redirecting...`, 'success');
+        setTimeout(() => {
+          redirectToDashboard(role);
+        }, 1000);
+      } catch (error) {
+        showAlert('Demo login failed. Please sign up first.', 'error');
+      }
+    }
+
+    function redirectToDashboard(role) {
+      switch(role) {
+        case 'farmer':
+          window.location.href = 'farmer-dashboard.html';
+          break;
+        case 'processor':
+          window.location.href = 'processor-dashboard.html';
+          break;
+        case 'buyer':
+          window.location.href = 'buyer-dashboard.html';
+          break;
+        default:
+          window.location.href = '../index.html';
+      }
+    }
+
+    // Forgot Password Functions
+    function openForgotModal() {
+      document.getElementById('forgotModal').classList.add('active');
+      resetModal();
+    }
+
+    function closeForgotModal() {
+      document.getElementById('forgotModal').classList.remove('active');
+    }
+
+    function resetModal() {
+      document.getElementById('step1Content').style.display = 'block';
+      document.getElementById('step2Content').style.display = 'none';
+      document.getElementById('step3Content').style.display = 'none';
+      document.getElementById('step1').classList.add('active');
+      document.getElementById('step2').classList.remove('active');
+      document.getElementById('step3').classList.remove('active');
+      document.getElementById('forgotEmail').value = '';
+      document.querySelectorAll('.otp-input').forEach(input => input.value = '');
+      document.getElementById('newPassword').value = '';
+      document.getElementById('confirmNewPassword').value = '';
+      document.getElementById('modalAlert').innerHTML = '';
+    }
+
+    async function sendOTP() {
+      const email = document.getElementById('forgotEmail').value;
+      if (!email) {
+        showModalAlert('Please enter your email', 'error');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/password/forgot`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          resetEmail = email;
+          showModalAlert('OTP sent! Check your email (or console for dev)', 'success');
+          
+          // Move to step 2
+          document.getElementById('step1Content').style.display = 'none';
+          document.getElementById('step2Content').style.display = 'block';
+          document.getElementById('step1').classList.remove('active');
+          document.getElementById('step2').classList.add('active');
+          
+          // For development - show OTP
+          if (data.devOtp) {
+            console.log('Development OTP:', data.devOtp);
+            // Auto-fill OTP in development
+            const otpDigits = data.devOtp.split('');
+            document.querySelectorAll('.otp-input').forEach((input, i) => {
+              input.value = otpDigits[i] || '';
+            });
+          }
+        } else {
+          showModalAlert(data.message || 'Failed to send OTP', 'error');
+        }
+      } catch (error) {
+        showModalAlert('Network error. Please try again.', 'error');
+      }
+    }
+
+    function moveToNext(input, index) {
+      if (input.value && index < 5) {
+        document.querySelectorAll('.otp-input')[index + 1].focus();
+      }
+    }
+
+    async function verifyOTP() {
+      const otpInputs = document.querySelectorAll('.otp-input');
+      const otp = Array.from(otpInputs).map(input => input.value).join('');
+
+      if (otp.length !== 6) {
+        showModalAlert('Please enter complete 6-digit OTP', 'error');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/password/verify-otp`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: resetEmail, otp })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.verified) {
+          resetToken = data.resetToken;
+          showModalAlert('OTP verified!', 'success');
+          
+          // Move to step 3
+          document.getElementById('step2Content').style.display = 'none';
+          document.getElementById('step3Content').style.display = 'block';
+          document.getElementById('step2').classList.remove('active');
+          document.getElementById('step3').classList.add('active');
+        } else {
+          showModalAlert(data.message || 'Invalid OTP', 'error');
+        }
+      } catch (error) {
+        showModalAlert('Network error. Please try again.', 'error');
+      }
+    }
+
+    async function resendOTP() {
+      await sendOTP();
+    }
+
+    async function resetPassword() {
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmNewPassword').value;
+
+      if (newPassword.length < 6) {
+        showModalAlert('Password must be at least 6 characters', 'error');
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        showModalAlert('Passwords do not match', 'error');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/password/reset`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            email: resetEmail, 
+            resetToken, 
+            newPassword 
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          showModalAlert('Password reset successful!', 'success');
+          setTimeout(() => {
+            closeForgotModal();
+            showAlert('Password reset successful! Please login with your new password.', 'success');
+          }, 1500);
+        } else {
+          showModalAlert(data.message || 'Failed to reset password', 'error');
+        }
+      } catch (error) {
+        showModalAlert('Network error. Please try again.', 'error');
+      }
+    }
+
+    function showAlert(message, type) {
+      const alertContainer = document.getElementById('alertContainer');
+      alertContainer.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+    }
+
+    function showModalAlert(message, type) {
+      const modalAlert = document.getElementById('modalAlert');
+      modalAlert.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+    }
+  </script>
+</body>
+</html>

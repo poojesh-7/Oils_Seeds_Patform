@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Farmer Dashboard - OilSeed Pro</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <Style>
+    .noti{
+      position: absolute;
+      top: 100px;
+      right: 50px;
+    }
+  </Style>
+</head>
+<body>
+  <!-- Navigation -->
+   <div class="noti">
+   </div>
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="../index.html" class="logo">
+        <div class="logo-icon">🌱</div>
+        <span>OilSeed Pro</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="live-market.html">Live Market</a></li>
+        <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+        <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Dashboard -->
+  <div class="dashboard">
+    <div class="dashboard-container">
+      <div class="dashboard-header">
+        <h1 class="dashboard-title">Farmer Dashboard</h1>
+        <p class="dashboard-subtitle">Manage your oilseed listings and track sales</p>
+      </div>
+
+      <div class="dashboard-grid">
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar">
+          <ul class="sidebar-menu">
+            <li><a href="#" class="active" onclick="showTab('overview')"><i class="fas fa-home"></i> Overview</a></li>
+            <li><a href="#" onclick="showTab('listings')"><i class="fas fa-list"></i> My Listings</a></li>
+            <li><a href="#" onclick="showTab('upload')"><i class="fas fa-upload"></i> Upload Produce</a></li>
+            <li><a href="#" onclick="showTab('sales')"><i class="fas fa-chart-bar"></i> Sales History</a></li>
+            <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+          </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-content">
+          <!-- Overview Tab -->
+          <div id="overview" class="tab-content active">
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-card-icon"><i class="fas fa-seedling"></i></div>
+                <div class="stat-card-value" id="totalListings">0</div>
+                <div class="stat-card-label">Active Listings</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-icon"><i class="fas fa-shopping-cart"></i></div>
+                <div class="stat-card-value" id="totalSales">0</div>
+                <div class="stat-card-label">Total Sales</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-icon"><i class="fas fa-rupee-sign"></i></div>
+                <div class="stat-card-value" id="totalRevenue">₹0</div>
+                <div class="stat-card-label">Total Revenue</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-icon"><i class="fas fa-eye"></i></div>
+                <div class="stat-card-value" id="profileViews">128</div>
+                <div class="stat-card-label">Profile Views</div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Price Trends</h3>
+              </div>
+              <div class="card-body">
+                <canvas id="priceChart" height="100"></canvas>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top: 1.5rem;">
+              <div class="card-header">
+                <h3 class="card-title">Recent Listings</h3>
+                <a href="#" onclick="showTab('listings')" class="auth-link">View All</a>
+              </div>
+              <div class="card-body">
+                <div class="table-container">
+                  <table class="data-table" id="recentListingsTable">
+                    <thead>
+                      <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price/q</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td colspan="5" class="loading">
+                          <div class="spinner"></div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Listings Tab -->
+          <div id="listings" class="tab-content">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">All My Listings</h3>
+                <a href="#" onclick="showTab('upload')" class="btn btn-primary btn-sm">
+                  <i class="fas fa-plus"></i> Add New
+                </a>
+              </div>
+              <div class="card-body">
+                <div class="table-container">
+                  <table class="data-table" id="allListingsTable">
+                    <thead>
+                      <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Expected Price</th>
+                        <th>Grade</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td colspan="6" class="loading">
+                          <div class="spinner"></div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Upload Tab -->
+          <div id="upload" class="tab-content">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Upload New Produce</h3>
+              </div>
+              <div class="card-body">
+                <form id="uploadForm">
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-group">
+                      <label class="form-label" for="oilseedType">Oilseed Type *</label>
+                      <select class="form-select" id="oilseedType" required>
+                        <option value="">Select oilseed type</option>
+                        <option value="soybean">Soybean</option>
+                        <option value="groundnut">Groundnut</option>
+                        <option value="mustard">Mustard</option>
+                        <option value="sunflower">Sunflower</option>
+                        <option value="sesame">Sesame</option>
+                        <option value="cottonseed">Cottonseed</option>
+                        <option value="rapeseed">Rapeseed</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label" for="quantity">Quantity (Quintals) *</label>
+                      <input type="number" class="form-input" id="quantity" placeholder="Enter quantity" required min="1" step="0.01">
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label" for="expectedPrice">Expected Price per Quintal (₹) *</label>
+                      <input type="number" class="form-input" id="expectedPrice" placeholder="Enter expected price" required min="1">
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label" for="grade">Grade *</label>
+                      <select class="form-select" id="grade" required>
+                        <option value="">Select grade</option>
+                        <option value="A">Grade A (Premium)</option>
+                        <option value="B">Grade B (Standard)</option>
+                        <option value="C">Grade C (Fair)</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label" for="moistureLevel">Moisture Level (%)</label>
+                      <input type="number" class="form-input" id="moistureLevel" placeholder="Enter moisture level" min="0" max="100" step="0.1">
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label" for="harvestDate">Harvest Date *</label>
+                      <input type="date" class="form-input" id="harvestDate" required>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="qualityNotes">Quality Notes / Additional Info</label>
+                    <textarea class="form-textarea" id="qualityNotes" placeholder="Enter any additional information about quality, storage conditions, etc."></textarea>
+                  </div>
+
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-upload"></i>
+                    List Produce
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sales History Tab -->
+          <div id="sales" class="tab-content">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Sales History</h3>
+              </div>
+              <div class="card-body">
+                <div class="table-container">
+                  <table class="data-table" id="salesTable">
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price/q</th>
+                        <th>Total Amount</th>
+                        <th>Buyer</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td colspan="7" class="loading">
+                          <div class="spinner"></div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/auth.js"></script>
+  <script src="../js/dashboard.js"></script>
+  <script>
+    // Check authentication
+    checkAuth('farmer');
+
+    // Initialize dashboard
+    document.addEventListener('DOMContentLoaded', () => {
+      loadFarmerStats();
+      loadRecentListings();
+      loadAllListings();
+      loadSalesHistory();
+      initPriceChart();
+
+      // Set today's date as max for harvest date
+      document.getElementById('harvestDate').max = new Date().toISOString().split('T')[0];
+    });
+
+    // Upload form submission
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = {
+        oilseedType: document.getElementById('oilseedType').value,
+        quantity: document.getElementById('quantity').value,
+        expectedPrice: document.getElementById('expectedPrice').value,
+        grade: document.getElementById('grade').value,
+        moistureLevel: document.getElementById('moistureLevel').value,
+        harvestDate: document.getElementById('harvestDate').value,
+        qualityNotes: document.getElementById('qualityNotes').value
+      };
+
+      try {
+        await uploadOilseed(formData);
+        let div = document.querySelector('.noti');
+        let p = document.createElement('p');
+        p.textContent = 'Successfully';
+        div.append('Product', p, 'Uploaded');
+        window.location.href = "/frontend/pages/farmer-dashboard.html";
+        document.getElementById('uploadForm').reset();
+        showTab('listings');
+        loadAllListings();
+        loadFarmerStats();
+      } catch (error) {
+        console.log('Failed to list produce. Please try again.');
+      }
+    });
+
+    // Tab switching
+    function showTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.getElementById(tabName).classList.add('active');
+
+      document.querySelectorAll('.sidebar-menu a').forEach(link => {
+        link.classList.remove('active');
+      });
+      event.target.classList.add('active');
+    }
+
+    // Initialize price chart
+    function initPriceChart() {
+      const ctx = document.getElementById('priceChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+          datasets: [{
+            label: 'Soybean',
+            data: [4500, 4650, 4800, 4750, 4900, 4850],
+            borderColor: '#2d5016',
+            backgroundColor: 'rgba(45, 80, 22, 0.1)',
+            fill: true
+          }, {
+            label: 'Groundnut',
+            data: [5800, 5900, 6000, 6100, 6150, 6200],
+            borderColor: '#d4a574',
+            backgroundColor: 'rgba(212, 165, 116, 0.1)',
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'top',
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: false,
+              ticks: {
+                callback: function(value) {
+                  return '₹' + value;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
