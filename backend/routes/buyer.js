@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
+const sendMail = require("../utils/mailer");
 // Middleware to verify token
 const authMiddleware = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
@@ -106,6 +106,64 @@ router.post("/buy-byproduct", authMiddleware, async (req, res) => {
         status: newQuantity === 0 ? "sold_out" : "available",
       })
       .eq("id", byproductId);
+
+    // Get buyer details
+    const { data: buyer } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", req.user.userId)
+      .single();
+
+    // Get seller (processor) details
+    const { data: seller } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", byproduct.processor_id)
+      .single();
+
+    try {
+      // 📩 Email to Buyer
+      await sendMail(
+        buyer.email,
+        "By-Product Purchase Confirmation",
+        `
+      <h2>Purchase Successful 🎉</h2>
+      <p><strong>Product:</strong> ${byproduct.product_type}</p>
+      <p><strong>Source Oilseed:</strong> ${byproduct.source_oilseed}</p>
+      <p><strong>Quantity:</strong> ${qty}</p>
+      <p><strong>Total Amount:</strong> ₹${totalAmount}</p>
+
+      <h3>Processor Details</h3>
+      <p>Name: ${seller.full_name}</p>
+      <p>Phone: ${seller.phone}</p>
+      <p>Email: ${seller.email}</p>
+      <p>Company: ${seller.company_name}</p>
+      <p>Location: ${seller.location}</p>
+    `,
+      );
+
+      // 📩 Email to Processor (Seller)
+      await sendMail(
+        seller.email,
+        "Your By-Product Has Been Purchased",
+        `
+      <h2>Your Product Was Purchased 🚀</h2>
+      <p><strong>Product:</strong> ${byproduct.product_type}</p>
+      <p><strong>Quantity Sold:</strong> ${qty}</p>
+      <p><strong>Total Amount:</strong> ₹${totalAmount}</p>
+
+      <h3>Buyer Details</h3>
+      <p>Name: ${buyer.full_name}</p>
+      <p>Phone: ${buyer.phone}</p>
+      <p>Email: ${buyer.email}</p>
+      <p>Company: ${buyer.company_name || "N/A"}</p>
+      <p>Location: ${buyer.location}</p>
+    `,
+      );
+    } catch (mailError) {
+      console.error("Email sending failed:", mailError);
+      // Don't break transaction if email fails
+    }
 
     res.json({ message: "Purchase successful", transaction });
   } catch (error) {

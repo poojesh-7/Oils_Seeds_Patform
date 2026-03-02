@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
+const sendMail = require("../utils/mailer");
 // Middleware to verify token
 const authMiddleware = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
@@ -97,6 +97,55 @@ router.post("/buy-oilseed", authMiddleware, async (req, res) => {
         created_at: new Date().toISOString(),
       },
     ]);
+
+    // Get buyer details
+    const { data: buyer } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", req.user.userId)
+      .single();
+
+    // Get seller details
+    const { data: seller } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", oilseed.farmer_id)
+      .single();
+
+    await sendMail(
+      buyer.email,
+      "Purchase Confirmation - Seller Details",
+      `
+    <h2>Purchase Successful 🎉</h2>
+    <p><strong>Oilseed Type:</strong> ${oilseed.oilseed_type}</p>
+    <p><strong>Quantity:</strong> ${qty}</p>
+    <p><strong>Total Amount:</strong> ₹${qty * parseFloat(price)}</p>
+
+    <h3>Farmer Details</h3>
+    <p>Name: ${seller.full_name}</p>
+    <p>Phone: ${seller.phone}</p>
+    <p>Email: ${seller.email}</p>
+    <p>Location: ${seller.location}</p>
+  `,
+    );
+
+    await sendMail(
+      seller.email,
+      "Your Oilseed Has Been Purchased",
+      `
+    <h2>Your Oilseed Listing Was Purchased 🚀</h2>
+    <p><strong>Oilseed Type:</strong> ${oilseed.oilseed_type}</p>
+    <p><strong>Quantity Sold:</strong> ${qty}</p>
+    <p><strong>Total Amount:</strong> ₹${qty * parseFloat(price)}</p>
+
+    <h3>Buyer Details</h3>
+    <p>Name: ${buyer.full_name}</p>
+    <p>Phone: ${buyer.phone}</p>
+    <p>Email: ${buyer.email}</p>
+    <p>Company: ${buyer.company_name}</p>
+    <p>Location: ${buyer.location}</p>
+  `,
+    );
 
     res.json({ message: "Purchase successful" });
   } catch (err) {
