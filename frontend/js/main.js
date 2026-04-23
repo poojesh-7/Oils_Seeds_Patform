@@ -30,13 +30,13 @@ function updateNavigation() {
     let dashboardUrl = "";
     switch (user.role) {
       case "farmer":
-        dashboardUrl = "/frontend/pages/farmer-dashboard.html";
+        dashboardUrl = "/pages/farmer-dashboard.html";
         break;
       case "processor":
-        dashboardUrl = "/frontend/pages/processor-dashboard.html";
+        dashboardUrl = "/pages/processor-dashboard.html";
         break;
       case "buyer":
-        dashboardUrl = "/frontend/pages/buyer-dashboard.html";
+        dashboardUrl = "/pages/buyer-dashboard.html";
         break;
     }
 
