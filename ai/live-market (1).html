@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Market - OilSeed Pro</title>
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    window.LIVE_MARKET_SUPABASE_URL = 'https://sgjnarjbrrcgawxbuirs.supabase.co';
+    window.LIVE_MARKET_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNnam5hcmpicnJjZ2F3eGJ1aXJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5NjY5OTMsImV4cCI6MjA4NjU0Mjk5M30.Q9gqI4ZgB2f_ANKxvwDy5l5B_djCfn5gpe7mYoMAXak';
+  </script>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="../index.html" class="logo">
+        <div class="logo-icon">🌱</div>
+        <span>OilSeed Pro</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="live-market.html">Live Market</a></li>
+        <li><a href="login.html" class="btn-primary">Login / Register</a></li>
+      </ul>
+      <button class="mobile-menu-btn">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Live Market Content -->
+  <div class="dashboard" style="padding-top: 100px;">
+    <div class="dashboard-container">
+      <div class="dashboard-header">
+        <h1 class="dashboard-title">Live Market Prices</h1>
+        <p class="dashboard-subtitle">Real-time oilseed and by-product prices across major Indian markets</p>
+      </div>
+
+      <!-- Market Overview Cards -->
+      <div class="stats-grid" style="margin-bottom: 2rem;">
+        <div class="stat-card">
+          <div class="stat-card-icon"><i class="fas fa-chart-line"></i></div>
+          <div class="stat-card-value" id="marketTrend">+2.4%</div>
+          <div class="stat-card-label">Average MSP</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon"><i class="fas fa-exchange-alt"></i></div>
+          <div class="stat-card-value" id="totalVolume">₹45Cr</div>
+          <div class="stat-card-label">Highest MSP</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon"><i class="fas fa-list"></i></div>
+          <div class="stat-card-value" id="activeListings">1,245</div>
+          <div class="stat-card-label">Tracked Commodities</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon"><i class="fas fa-users"></i></div>
+          <div class="stat-card-value" id="activeTraders">3,567</div>
+          <div class="stat-card-label">Volatility (CV%)</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+          <h3 class="card-title">Analytics Insights</h3>
+        </div>
+        <div class="card-body" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div>
+            <p style="margin: 0 0 0.5rem; font-weight: 600;" id="insightHeadline">Loading insights...</p>
+            <p style="margin: 0; color: var(--gray);" id="insightSubline">Waiting for market data.</p>
+          </div>
+          <ul id="insightList" style="margin: 0; padding-left: 1.1rem; color: var(--gray);"></ul>
+        </div>
+      </div>
+
+      <!-- Price Charts -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Top Commodities by MSP</h3>
+          </div>
+          <div class="card-body">
+            <canvas id="rawOilseedChart" height="150"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">MSP Deviation vs Average</h3>
+          </div>
+          <div class="card-body">
+            <canvas id="byproductChart" height="150"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Current Prices Table -->
+      <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+          <h3 class="card-title">Current Market Prices</h3>
+          <span style="color: var(--gray); font-size: 0.875rem;">Last updated: <span id="lastUpdated">Just now</span></span>
+        </div>
+        <div class="card-body">
+          <div class="table-container">
+            <table class="data-table" id="marketPricesTable">
+              <thead>
+                <tr>
+                  <th>Commodity</th>
+                  <th>Group</th>
+                  <th>MSP/Quintal</th>
+                  <th>Vs Avg</th>
+                  <th>Rank</th>
+                  <th>Trend</th>
+                </tr>
+              </thead>
+              <tbody id="marketPricesBody">
+                <!-- Data will be populated by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Export Opportunities -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Export Opportunities</h3>
+        </div>
+        <div class="card-body">
+          <div class="product-grid" id="exportOpportunities">
+            <div class="product-card">
+              <div class="product-image">🌏</div>
+              <div class="product-content">
+                <h4 class="product-title">Soymeal Export</h4>
+                <div class="product-meta">
+                  <span class="product-meta-item">🇹🇭 Thailand</span>
+                  <span class="product-meta-item">5000 MT</span>
+                </div>
+                <div class="product-price">$480-520/MT</div>
+                <p style="font-size: 0.875rem; color: var(--gray); margin-bottom: 1rem;">Requirements: ISO 22000, Non-GMO</p>
+                <button class="btn btn-primary btn-sm" style="width: 100%;">Express Interest</button>
+              </div>
+            </div>
+            <div class="product-card">
+              <div class="product-image">🌍</div>
+              <div class="product-content">
+                <h4 class="product-title">Groundnut Cake</h4>
+                <div class="product-meta">
+                  <span class="product-meta-item">🇦🇪 UAE</span>
+                  <span class="product-meta-item">3000 MT</span>
+                </div>
+                <div class="product-price">$380-450/MT</div>
+                <p style="font-size: 0.875rem; color: var(--gray); margin-bottom: 1rem;">Requirements: Halal Certified</p>
+                <button class="btn btn-primary btn-sm" style="width: 100%;">Express Interest</button>
+              </div>
+            </div>
+            <div class="product-card">
+              <div class="product-image">🌎</div>
+              <div class="product-content">
+                <h4 class="product-title">Mustard Husk</h4>
+                <div class="product-meta">
+                  <span class="product-meta-item">🇩🇪 Germany</span>
+                  <span class="product-meta-item">2000 MT</span>
+                </div>
+                <div class="product-price">$200-280/MT</div>
+                <p style="font-size: 0.875rem; color: var(--gray); margin-bottom: 1rem;">Requirements: Organic Certified</p>
+                <button class="btn btn-primary btn-sm" style="width: 100%;">Express Interest</button>
+              </div>
+            </div>
+            <div class="product-card">
+              <div class="product-image">🌏</div>
+              <div class="product-content">
+                <h4 class="product-title">Sunflower Meal</h4>
+                <div class="product-meta">
+                  <span class="product-meta-item">🇰🇷 South Korea</span>
+                  <span class="product-meta-item">8000 MT</span>
+                </div>
+                <div class="product-price">$320-380/MT</div>
+                <p style="font-size: 0.875rem; color: var(--gray); margin-bottom: 1rem;">Requirements: Aflatoxin &lt;20ppb</p>
+                <button class="btn btn-primary btn-sm" style="width: 100%;">Express Interest</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <div class="logo-icon">🌱</div>
+            <span>OilSeed Pro</span>
+          </div>
+          <p class="footer-description">
+            India's leading digital marketplace for oilseed by-products.
+          </p>
+        </div>
+        <div>
+          <h4 class="footer-title">Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="live-market.html">Live Market</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-title">Contact</h4>
+          <ul class="footer-links">
+            <li><i class="fas fa-envelope"></i> support@oilseedpro.com</li>
+            <li><i class="fas fa-phone"></i> +91 1800-123-4567</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copyright">© 2024 OilSeed Pro. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="./public/addons/live-market-addon.js"></script>
+</body>
+</html>

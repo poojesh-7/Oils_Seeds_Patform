@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AGMARKNET Seeds Dashboard</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <main class="container">
+      <section class="header">
+        <div>
+          <h1 class="title">Agricultural Commodity Dashboard</h1>
+          <p class="subtitle">Market-wise price and arrival insights with daily Supabase snapshots</p>
+        </div>
+        <div class="meta">
+          <p id="lastUpdated" class="last-updated">Last updated: --</p>
+          <p id="dataSource" class="data-source">Source: --</p>
+        </div>
+      </section>
+
+      <section class="status-area" id="statusArea">
+        <div id="spinner" class="spinner"></div>
+        <div id="errorMessage" class="error hidden"></div>
+        <div id="warningMessage" class="warning hidden"></div>
+      </section>
+
+      <section class="summary-grid">
+        <article class="summary-card">
+          <h3>Total Records</h3>
+          <p id="summaryCount">0</p>
+        </article>
+        <article class="summary-card">
+          <h3>Average MSP</h3>
+          <p id="summaryPrice">0</p>
+        </article>
+        <article class="summary-card">
+          <h3>Max MSP</h3>
+          <p id="summaryArrivals">0</p>
+        </article>
+      </section>
+
+      <section class="charts-grid">
+        <article class="chart-card">
+          <h3>MSP by Commodity</h3>
+          <canvas id="priceChart" aria-label="Commodity prices chart"></canvas>
+        </article>
+        <article class="chart-card">
+          <h3>Top MSP Commodities</h3>
+          <canvas id="arrivalChart" aria-label="Arrival quantity chart"></canvas>
+        </article>
+      </section>
+
+      <section class="table-wrapper">
+        <table aria-label="AGMARKNET data table">
+          <thead>
+            <tr>
+              <th>Commodity Group</th>
+              <th>Commodity</th>
+              <th>MSP (Rs./Quintal) 2026-27</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
