@@ -1,6 +1,6 @@
 // OilSeed Pro - Authentication Module
 
-const API_BASE_URL = "http://localhost:3000/api";
+const API_BASE_URL = "https://oils-seeds-patform-q4ga.onrender.com/api";
 
 // Store token and user data
 function setAuth(token, user) {
